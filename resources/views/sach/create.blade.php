@@ -1,0 +1,180 @@
+@extends('layouts.admin')
+
+@section('content')
+<div class="container-fluid">
+
+    {{-- HEADER --}}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-primary">➕ Thêm sách mới</h2>
+        <a href="{{ route('sach.index') }}" class="btn btn-secondary">⬅ Quay lại</a>
+    </div>
+
+    {{-- ERRORS --}}
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul class="mb-0">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
+    {{-- FORM --}}
+    <form action="{{ route('sach.store') }}" method="POST" enctype="multipart/form-data">
+        @csrf
+
+        {{-- MÃ SÁCH --}}
+        <div class="mb-3">
+            <label class="fw-semibold">Mã sách</label>
+            <input type="text" name="MaSach" class="form-control" value="{{ old('MaSach') }}" required>
+        </div>
+
+        {{-- TÊN SÁCH --}}
+        <div class="mb-3">
+            <label class="fw-semibold">Tên sách</label>
+            <input type="text" name="TenSach" class="form-control" value="{{ old('TenSach') }}" required>
+        </div>
+
+        {{-- NGƯỜI DỊCH --}}
+        <div class="mb-3">
+            <label class="fw-semibold">Người dịch</label>
+            <input type="text" name="NguoiDich" class="form-control" value="{{ old('NguoiDich') }}">
+        </div>
+
+        {{-- SỐ TRANG --}}
+        <div class="mb-3">
+            <label class="fw-semibold">Số trang</label>
+            <input type="number" name="SoTrang" class="form-control" value="{{ old('SoTrang') }}" required>
+        </div>
+
+        {{-- NĂM XUẤT BẢN --}}
+        <div class="mb-3">
+            <label class="fw-semibold">Năm xuất bản</label>
+            <input type="number" name="NamXuatBang" class="form-control" value="{{ old('NamXuatBang') }}" required>
+        </div>
+
+        {{-- ẢNH --}}
+        <div class="mb-3">
+            <label class="fw-semibold">Ảnh bìa</label>
+            <input type="file" name="Anh" class="form-control">
+        </div>
+
+        {{-- TÓM TẮT --}}
+        <div class="mb-3">
+            <label class="fw-semibold">Tóm tắt</label>
+            <div id="shortSummary" class="border rounded p-2 bg-light text-muted">
+                {{ old('TomTat') ? Str::limit(old('TomTat'), 70) : '(Chưa có tóm tắt)' }}
+            </div>
+            <button type="button"
+                    class="btn btn-outline-primary btn-sm mt-2 open-summary-modal"
+                    data-bs-toggle="modal"
+                    data-bs-target="#summaryModal">
+                ✏️ Nhập tóm tắt
+            </button>
+            <input type="hidden" name="TomTat" id="TomTatHidden" value="{{ old('TomTat') }}">
+        </div>
+
+        {{-- TÁC GIẢ --}}
+        <div class="mb-3">
+            <label class="fw-semibold">Tác giả</label>
+            <div id="currentAuthors" class="border rounded p-2 bg-light mb-2">
+                (Chưa chọn tác giả)
+            </div>
+            <button type="button"
+                    class="btn btn-outline-primary btn-sm"
+                    data-bs-toggle="modal"
+                    data-bs-target="#authorsModal">
+                ✏️ Chọn tác giả
+            </button>
+        </div>
+
+        {{-- THỂ LOẠI --}}
+        <div class="mb-3">
+            <label class="fw-semibold">Thể loại</label>
+            <div id="currentCategories" class="border rounded p-2 bg-light mb-2">
+                (Chưa chọn thể loại)
+            </div>
+            <button type="button"
+                    class="btn btn-outline-primary btn-sm"
+                    data-bs-toggle="modal"
+                    data-bs-target="#categoriesModal">
+                ✏️ Chọn thể loại
+            </button>
+        </div>
+
+        {{-- 🔴 HIDDEN INPUT BẮT BUỘC --}}
+        <div id="hidden-authors"></div>
+        <div id="hidden-categories"></div>
+
+        {{-- NHÀ XUẤT BẢN --}}
+        <div class="mb-3">
+            <label class="fw-semibold">Nhà xuất bản</label>
+            <select name="MaNXB" class="form-select">
+                <option value="">-- Chọn --</option>
+                @foreach($nhaXuatBans as $nxb)
+                    <option value="{{ $nxb->ID }}" {{ old('MaNXB')==$nxb->ID ? 'selected' : '' }}>
+                        {{ $nxb->TenNXB }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
+
+        {{-- MÃ VỊ TRÍ --}}
+        <div class="mb-3">
+            <label class="fw-semibold">Mã vị trí</label>
+            <input type="text" name="MaVT" class="form-control" value="{{ old('MaVT') }}" required>
+        </div>
+
+        {{-- ================== SỐ LƯỢNG ================== --}}
+        <div class="mb-3">
+            <label class="fw-semibold d-block mb-2">Số lượng</label>
+            <div class="d-flex gap-2">
+                @for($i=0; $i<=3; $i++)
+                    <input type="radio"
+                           class="btn-check"
+                           name="SoLuong"
+                           id="qty{{ $i }}"
+                           value="{{ $i }}"
+                           autocomplete="off"
+                           {{ old('SoLuong',1)==$i ? 'checked' : '' }}>
+                    <label class="btn btn-outline-{{ $i==0?'secondary':'primary' }} flex-fill"
+                           for="qty{{ $i }}">
+                        {{ $i==0 ? 'Không' : $i }}
+                    </label>
+                @endfor
+            </div>
+        </div>
+
+        {{-- ================== TRẠNG THÁI ================== --}}
+        <div class="mb-3">
+            <label class="fw-semibold d-block mb-2">Trạng thái</label>
+            <div class="d-flex gap-2">
+                <input type="radio" class="btn-check" name="TrangThai" id="statusCon" value="Con"
+                       autocomplete="off" {{ old('TrangThai','Con')=='Con' ? 'checked' : '' }}>
+                <label class="btn btn-outline-success flex-fill" for="statusCon">Còn</label>
+
+                <input type="radio" class="btn-check" name="TrangThai" id="statusHet" value="Het"
+                       autocomplete="off" {{ old('TrangThai')=='Het' ? 'checked' : '' }}>
+                <label class="btn btn-outline-danger flex-fill" for="statusHet">Hết</label>
+
+                <input type="radio" class="btn-check" name="TrangThai" id="statusThuThu" value="ThuThuDangXuLy"
+                       autocomplete="off" {{ old('TrangThai')=='ThuThuDangXuLy' ? 'checked' : '' }}>
+                <label class="btn btn-outline-primary flex-fill" for="statusThuThu">
+                    Thủ thư đang xử lý
+                </label>
+            </div>
+        </div>
+
+        {{-- SUBMIT --}}
+        <button type="submit" class="btn btn-success">💾 Lưu</button>
+        <a href="{{ route('sach.index') }}" class="btn btn-secondary">Hủy</a>
+    </form>
+</div>
+
+{{-- ===== MODAL & SCRIPT (GIỮ NGUYÊN CỦA BẠN) ===== --}}
+@include('sach.modals.summary')
+@include('sach.modals.authors', ['tacGias'=>$tacGias])
+@include('sach.modals.categories', ['theLoais'=>$theLoais])
+@include('sach.scripts.form')
+@endsection

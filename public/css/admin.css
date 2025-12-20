@@ -1,0 +1,232 @@
+/*=====================================
+=            ADMIN CSS FILE            =
+======================================*/
+
+/*-------------------------------------
+    Reset cơ bản
+-------------------------------------*/
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: "Segoe UI", sans-serif;
+    background-color: #f5f6fa;
+}
+
+/*-------------------------------------
+    Header
+-------------------------------------*/
+.header {
+    width: 100%;
+    height: 70px;
+    background-color: #1f2a38;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    top: 0;
+    z-index: 1000;
+}
+
+.header img {
+    height: 50px;
+    width: 50px;
+    border-radius: 50%;
+    margin-right: 15px;
+    object-fit: cover;
+}
+
+.header .title {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+/*-------------------------------------
+    Layout tổng
+-------------------------------------*/
+.layout {
+    display: flex;
+    min-height: 100vh;
+    padding-top: 70px; /* tránh header */
+}
+
+/*-------------------------------------
+    Sidebar
+-------------------------------------*/
+.sidebar {
+    width: 220px;
+    background-color: #2c3e50;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+    padding-top: 20px;
+    position: fixed;
+    top: 70px;
+    bottom: 0;
+    left: 0;
+    overflow-y: auto;
+}
+
+.user-section {
+    text-align: center;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.user-section .user-name {
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.user-section .user-icon {
+    width: 66%;
+    aspect-ratio: 1/1;
+    font-size: 5rem;
+    border: 3px solid #000;
+    border-radius: 50%;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+    background-color: #34495e;
+}
+
+/* Sidebar menu */
+.sidebar .nav-link {
+    color: #cfd8dc;
+    margin-bottom: 5px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 20px;
+    width: 100%;
+    text-decoration: none;
+    transition: background 0.25s, color 0.25s;
+}
+
+.sidebar .nav-link:hover {
+    background-color: #34495e;
+    color: #fff;
+}
+
+.sidebar hr {
+    border-top: 1px solid #445566;
+    width: 90%;
+    margin: 10px auto;
+}
+
+/* Logout button */
+.sidebar .mt-auto .nav-link {
+    justify-content: center;
+    gap: 5px;
+}
+
+.sidebar .mt-auto .nav-link:hover {
+    background-color: #ffe8e8;
+    color: #dc3545;
+}
+
+.sidebar .mt-auto .nav-link i {
+    color: #dc3545;
+}
+
+/*-------------------------------------
+    Dashboard / Content
+-------------------------------------*/
+.dashboard {
+    flex-grow: 1;
+    margin-left: 220px; /* tránh sidebar */
+    padding: 20px;
+    background-color: #f5f6fa;
+    overflow-x: auto;
+}
+
+.dashboard h1 {
+    margin-bottom: 20px;
+    font-size: 1.8rem;
+}
+
+.dashboard .btn {
+    margin-bottom: 20px;
+}
+
+/* Bảng full-width */
+.table-responsive {
+    width: 100%;
+}
+
+.dashboard table {
+    width: 100%;
+    text-align: center;
+    border-collapse: collapse;
+}
+
+.dashboard table th,
+.dashboard table td {
+    padding: 10px;
+    border: 1px solid #dee2e6;
+}
+
+/* Hover row */
+.dashboard table tbody tr:hover {
+    background-color: #f1f3f5;
+}
+
+/* Nút trong bảng */
+.dashboard .btn-sm {
+    padding: 4px 8px;
+    font-size: 0.875rem;
+}
+
+/*-------------------------------------
+    Card (nếu dùng)
+-------------------------------------*/
+.card {
+    border: none;
+    border-radius: 0.5rem;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    cursor: pointer;
+}
+
+.card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.card i {
+    transition: color 0.25s ease;
+}
+
+.card:hover i {
+    color: #0d6efd;
+}
+
+/*-------------------------------------
+    Responsive
+-------------------------------------*/
+@media (max-width: 768px) {
+    .layout {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        position: relative;
+        display: flex;
+        overflow-x: auto;
+        flex-direction: row;
+    }
+
+    .dashboard {
+        margin-left: 0;
+    }
+}
