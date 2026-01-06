@@ -10,10 +10,9 @@
 
     <hr>
 
-    {{-- MENU --}}
     <ul class="nav flex-column w-100 px-2 flex-grow-1">
 
-        {{-- QUẢN LÝ SÁCH --}}
+        {{-- ================= QUẢN LÝ SÁCH ================= --}}
         <li class="nav-item">
             <a class="nav-link d-flex justify-content-between align-items-center"
                 data-bs-toggle="collapse"
@@ -27,7 +26,8 @@
                 <i class="bi bi-chevron-down"></i>
             </a>
 
-            <div class="collapse show ps-3" id="quanLySachMenu">
+            <div class="collapse ps-3 {{ request()->routeIs('sach.*', 'vitri.*', 'tacgia.*', 'nhaxuatban.*', 'theloai.*') ? 'show' : '' }}"
+                id="quanLySachMenu">
                 <ul class="nav flex-column">
 
                     <li class="nav-item">
@@ -64,7 +64,49 @@
             </div>
         </li>
 
+        {{-- ================= QUẢN LÝ MƯỢN TRẢ SÁCH ================= --}}
+        <li class="nav-item mt-2">
+            <a class="nav-link d-flex justify-content-between align-items-center"
+                data-bs-toggle="collapse"
+                href="#quanLyMuonTraMenu"
+                role="button"
+                aria-expanded="true"
+                aria-controls="quanLyMuonTraMenu">
+                <span>
+                    <i class="bi bi-arrow-left-right"></i> Quản lý mượn trả sách
+                </span>
+                <i class="bi bi-chevron-down"></i>
+            </a>
+
+            <div class="collapse ps-3 {{ request()->routeIs('muontra.*', 'thedocgia.*') ? 'show' : '' }}"
+                id="quanLyMuonTraMenu">
+
+                <ul class="nav flex-column">
+
+                    <li class="nav-item">
+                        <a href="{{ route('muontra.index') }}" class="nav-link">
+                            <i class="bi bi-bookmark-plus"></i> Mượn sách
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="{{ route('muontra.lichsu') }}" class="nav-link">
+                            <i class="bi bi-clock-history"></i> Trả sách
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="{{ route('thedocgia.index') }}" class="nav-link">
+                            <i class="bi bi-card-list"></i> Thẻ độc giả
+                        </a>
+                    </li>
+
+                </ul>
+            </div>
+        </li>
+
     </ul>
+
 
 
     {{-- LOGOUT --}}

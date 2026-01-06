@@ -2,6 +2,36 @@
 =            ADMIN CSS FILE            =
 ======================================*/
 
+/* Border width utilities */
+.border-2 {
+    border-width: 2px !important;
+}
+
+.border-3 {
+    border-width: 3px !important;
+}
+
+/* Toast positioning */
+.toast-container {
+    z-index: 9999;
+}
+.isbn-search-group .form-control,
+.isbn-search-group .btn {
+    height: 44px;
+    display: flex;
+    align-items: center;
+}
+
+.isbn-search-group .btn {
+    justify-content: center;
+    padding: 0;
+    min-width: 44px;
+}
+
+.isbn-search-group .btn i {
+    font-size: 1.1rem;
+}
+
 /*-------------------------------------
     Reset cơ bản
 -------------------------------------*/

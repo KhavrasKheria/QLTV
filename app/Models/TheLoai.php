@@ -10,8 +10,11 @@ class TheLoai extends Model
     use HasFactory;
 
     protected $table = 'theloai';
+
     protected $primaryKey = 'id';   // PK đúng với DB
+
     public $incrementing = true;
+
     public $timestamps = false;
 
     protected $fillable = [
@@ -27,7 +30,7 @@ class TheLoai extends Model
             Sach::class,
             'sach_theloai',
             'TheLoaiID', // FK thể loại trong pivot
-            'MaSach'     // FK sách trong pivot
+            'ISBN13'     // ✅ đổi từ MaSach
         );
     }
 }

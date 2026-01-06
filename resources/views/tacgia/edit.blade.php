@@ -6,9 +6,7 @@
     {{-- TIÊU ĐỀ --}}
     <div class="mb-4">
         <h3 class="fw-bold">✏️ Sửa tác giả</h3>
-        <p class="text-muted mb-0">
-            Cập nhật thông tin tác giả trong hệ thống
-        </p>
+      
     </div>
 
     {{-- THÔNG BÁO LỖI --}}

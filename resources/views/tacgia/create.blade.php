@@ -23,22 +23,6 @@
             <form action="{{ route('tacgia.store') }}" method="POST">
                 @csrf
 
-                {{-- MÃ TÁC GIẢ --}}
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">
-                        Mã tác giả <span class="text-danger">*</span>
-                    </label>
-                    <input type="text"
-                           name="MaTG"
-                           class="form-control @error('MaTG') is-invalid @enderror"
-                           value="{{ old('MaTG') }}"
-                           placeholder="Ví dụ: TG001">
-
-                    @error('MaTG')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                </div>
-
                 {{-- TÊN TÁC GIẢ --}}
                 <div class="mb-4">
                     <label class="form-label fw-semibold">
@@ -48,11 +32,14 @@
                            name="TenTG"
                            class="form-control @error('TenTG') is-invalid @enderror"
                            value="{{ old('TenTG') }}"
-                           placeholder="Ví dụ: Nguyễn Nhật Ánh">
+                           
+                           autofocus>
 
                     @error('TenTG')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
+
+                    
                 </div>
 
                 {{-- NÚT --}}

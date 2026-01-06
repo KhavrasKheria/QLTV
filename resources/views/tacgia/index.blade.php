@@ -29,14 +29,16 @@
     {{-- FORM TÌM KIẾM --}}
     <div class="card shadow-sm mb-4">
         <div class="card-body">
-            <form action="{{ route('tacgia.index') }}" method="GET">
+            <form id="searchForm" action="{{ route('tacgia.index') }}" method="GET">
                 <div class="input-group">
                     <input type="text"
+                           id="searchInput"
                            name="keyword"
                            class="form-control"
                            placeholder="🔍 Nhập tên tác giả..."
-                           value="{{ request('keyword') }}">
-                    <button class="btn btn-primary px-4">Tìm</button>
+                           value="{{ request('keyword') }}"
+                           style="height: 38px;">
+                    <button type="submit" class="btn btn-primary px-4" style="height: 38px;">Tìm</button>
                 </div>
             </form>
         </div>
@@ -45,42 +47,44 @@
     {{-- BẢNG DANH SÁCH --}}
     <div class="card shadow-sm">
         <div class="card-body p-0">
-            <table class="table table-hover table-bordered mb-0 align-middle">
-                <thead class="table-dark text-center">
-                    <tr>
-                        <th width="120">Mã tác giả</th>
-                        <th>Tên tác giả</th>
-                        <th width="200">Hành động</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse ($tacgias as $tg)
+            <div id="tableContainer">
+                <table class="table table-hover table-bordered mb-0 align-middle">
+                    <thead class="table-dark text-center">
                         <tr>
-                            <td class="text-center">{{ $tg->MaTG }}</td>
-                            <td>{{ $tg->TenTG }}</td>
-                            <td class="text-center">
-                                <a href="{{ route('tacgia.edit', $tg->MaTG) }}"
-                                   class="btn btn-warning btn-sm me-1">
-                                    ✏️ Sửa
-                                </a>
+                            <th width="120">Mã tác giả</th>
+                            <th>Tên tác giả</th>
+                            <th width="200">Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        @forelse ($tacgias as $tg)
+                            <tr>
+                                <td class="text-center">{{ $tg->MaTG }}</td>
+                                <td>{{ $tg->TenTG }}</td>
+                                <td class="text-center">
+                                    <a href="{{ route('tacgia.edit', $tg->MaTG) }}"
+                                       class="btn btn-warning btn-sm me-1">
+                                        ✏️ Sửa
+                                    </a>
 
-                                <button class="btn btn-danger btn-sm"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#deleteModal"
-                                        data-action="{{ route('tacgia.destroy', $tg->MaTG) }}">
-                                    🗑️ Xóa
-                                </button>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="3" class="text-center text-muted py-4">
-                                Không tìm thấy tác giả nào
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
+                                    <button class="btn btn-danger btn-sm"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#deleteModal"
+                                            data-action="{{ route('tacgia.destroy', $tg->MaTG) }}">
+                                        🗑️ Xóa
+                                    </button>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="3" class="text-center text-muted py-4">
+                                    Không tìm thấy tác giả nào
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
@@ -127,13 +131,91 @@
     </div>
 </div>
 
-{{-- SCRIPT GÁN ACTION CHO FORM XÓA --}}
+{{-- SCRIPT AJAX TÌM KIẾM + GÁN ACTION CHO FORM XÓA --}}
 <script>
+    // Debounce function để tránh gọi API quá nhiều
+    function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+
+    // Hàm tìm kiếm AJAX
+    function searchAuthors(keyword) {
+        fetch(`{{ route('tacgia.index') }}?keyword=${encodeURIComponent(keyword)}`, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            const tableBody = document.getElementById('tableBody');
+            
+            if (data.tacgias && data.tacgias.length > 0) {
+                tableBody.innerHTML = data.tacgias.map(tg => `
+                    <tr>
+                        <td class="text-center">${tg.MaTG}</td>
+                        <td>${tg.TenTG}</td>
+                        <td class="text-center">
+                            <a href="{{ route('tacgia.index') }}/${tg.MaTG}/edit"
+                               class="btn btn-warning btn-sm me-1">
+                                ✏️ Sửa
+                            </a>
+                            <button class="btn btn-danger btn-sm delete-btn"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#deleteModal"
+                                    data-action="{{ route('tacgia.index') }}/${tg.MaTG}">
+                                🗑️ Xóa
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+            } else {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="3" class="text-center text-muted py-4">
+                            Không tìm thấy tác giả nào
+                        </td>
+                    </tr>
+                `;
+            }
+        })
+        .catch(error => {
+            console.error('Lỗi tìm kiếm:', error);
+        });
+    }
+
+    // Debounced search function (chờ 500ms sau khi người dùng ngừng nhập)
+    const debouncedSearch = debounce(searchAuthors, 500);
+
+    // Lắng nghe sự kiện input
+    document.getElementById('searchInput').addEventListener('input', function(e) {
+        const keyword = e.target.value.trim();
+        debouncedSearch(keyword);
+    });
+
+    // Xử lý modal xóa
     const deleteModal = document.getElementById('deleteModal');
     deleteModal.addEventListener('show.bs.modal', function (event) {
         const button = event.relatedTarget;
         const action = button.getAttribute('data-action');
         document.getElementById('deleteForm').action = action;
+    });
+
+    // Xử lý click động cho nút xóa (event delegation)
+    document.getElementById('tableBody').addEventListener('click', function(e) {
+        const deleteBtn = e.target.closest('.delete-btn');
+        if (deleteBtn) {
+            const action = deleteBtn.getAttribute('data-action');
+            document.getElementById('deleteForm').action = action;
+        }
     });
 </script>
 @endsection

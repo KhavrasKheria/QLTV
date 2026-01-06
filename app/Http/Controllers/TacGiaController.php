@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\TacGia;
@@ -13,12 +12,22 @@ class TacGiaController extends Controller
     public function index(Request $request)
     {
         $keyword = $request->keyword;
-
+        
         $tacgias = TacGia::when($keyword, function ($query) use ($keyword) {
             $query->where('TenTG', 'like', "%$keyword%")
                 ->orWhere('MaTG', 'like', "%$keyword%");
-        })->get();
+        })
+        ->orderBy('MaTG', 'desc')
+        ->get();
 
+        // Nếu là AJAX request thì trả về JSON
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'tacgias' => $tacgias
+            ]);
+        }
+
+        // Nếu là request thông thường thì trả về view
         return view('tacgia.index', compact('tacgias', 'keyword'));
     }
 
@@ -36,19 +45,58 @@ class TacGiaController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'MaTG' => 'required|unique:tacgia,MaTG',
             'TenTG' => 'required',
         ], [
-            'MaTG.unique' => 'Mã tác giả đã tồn tại',
-            'MaTG.required' => 'Vui lòng nhập mã tác giả',
             'TenTG.required' => 'Vui lòng nhập tên tác giả',
         ]);
 
-        TacGia::create($request->only(['MaTG', 'TenTG']));
+        // Tự động tạo mã tác giả
+        $maTG = $this->generateMaTG();
 
-        return redirect()->route('tacgia.index')->with('success', 'Thêm tác giả thành công');
+        $tacgia = TacGia::create([
+            'MaTG' => $maTG,
+            'TenTG' => $request->TenTG
+        ]);
+
+        // Nếu là AJAX request (từ modal)
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Thêm tác giả thành công',
+                'tacgia' => [
+                    'MaTG' => $tacgia->MaTG,
+                    'TenTG' => $tacgia->TenTG
+                ]
+            ]);
+        }
+
+        // Nếu là request thông thường
+        return redirect()
+            ->route('tacgia.index')
+            ->with('success', 'Thêm tác giả thành công');
     }
 
+    /**
+     * Tạo mã tác giả tự động theo dạng TG_1, TG_2, ...
+     */
+    private function generateMaTG()
+    {
+        // Lấy số lớn nhất hiện có
+        $lastMaTG = TacGia::where('MaTG', 'like', 'TG_%')
+            ->orderByRaw('CAST(SUBSTRING(MaTG, 4) AS UNSIGNED) DESC')
+            ->value('MaTG');
+
+        if ($lastMaTG) {
+            // Tách số từ mã (TG_10 -> 10)
+            $number = (int) substr($lastMaTG, 3);
+            $newNumber = $number + 1;
+        } else {
+            // Nếu chưa có mã nào, bắt đầu từ 1
+            $newNumber = 1;
+        }
+
+        return 'TG_' . $newNumber;
+    }
 
     /**
      * Form sửa
@@ -66,6 +114,8 @@ class TacGiaController extends Controller
     {
         $request->validate([
             'TenTG' => 'required',
+        ], [
+            'TenTG.required' => 'Vui lòng nhập tên tác giả',
         ]);
 
         $tacgia = TacGia::findOrFail($MaTG);
@@ -73,7 +123,9 @@ class TacGiaController extends Controller
             'TenTG' => $request->TenTG
         ]);
 
-        return redirect()->route('tacgia.index')->with('success', 'Cập nhật tác giả thành công');
+        return redirect()
+            ->route('tacgia.index')
+            ->with('success', 'Cập nhật tác giả thành công');
     }
 
     /**
@@ -81,10 +133,17 @@ class TacGiaController extends Controller
      */
     public function destroy($id)
     {
-        TacGia::findOrFail($id)->delete();
+        try {
+            $tacgia = TacGia::findOrFail($id);
+            $tacgia->delete();
 
-        return redirect()
-            ->route('tacgia.index')
-            ->with('success', 'Xóa tác giả thành công!');
+            return redirect()
+                ->route('tacgia.index')
+                ->with('success', 'Xóa tác giả thành công!');
+        } catch (\Exception $e) {
+            return redirect()
+                ->route('tacgia.index')
+                ->with('error', 'Không thể xóa tác giả. Có thể đang được sử dụng trong sách.');
+        }
     }
 }

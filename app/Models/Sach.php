@@ -13,17 +13,19 @@ class Sach extends Model
     protected $table = 'sach';
 
     // Khóa chính
-    protected $primaryKey = 'MaSach';
+    protected $primaryKey = 'ISBN13';
 
     // Khóa chính là varchar, không auto-increment
     public $incrementing = false;
+
+    protected $keyType = 'string';
 
     // Laravel không tự động quản lý timestamp
     public $timestamps = false;
 
     // Các trường có thể gán giá trị
     protected $fillable = [
-        'MaSach',
+        'ISBN13',        // ✅ đổi từ MaSach
         'TenSach',
         'TomTat',
         'NguoiDich',
@@ -33,7 +35,7 @@ class Sach extends Model
         'TrangThai',
         'MaVT',
         'MaNXB',
-        'Anh' // Thêm trường ảnh vào đây
+        'Anh'
     ];
 
     /**
@@ -52,10 +54,10 @@ class Sach extends Model
     public function tacGias()
     {
         return $this->belongsToMany(
-            TacGia::class,      // model tác giả
-            'sach_tacgia',      // bảng trung gian
-            'MaSach',           // khóa của sách trong bảng trung gian
-            'MaTG'              // khóa của tác giả trong bảng trung gian
+            TacGia::class,   // model tác giả
+            'sach_tacgia',   // bảng trung gian
+            'ISBN13',        // ✅ khóa sách
+            'MaTG'           // khóa tác giả
         );
     }
 
@@ -66,10 +68,43 @@ class Sach extends Model
     public function theLoais()
     {
         return $this->belongsToMany(
-            TheLoai::class,       // Model thể loại
-            'sach_theloai',       // Bảng trung gian
-            'MaSach',             // Khóa sách trong bảng trung gian
-            'TheLoaiID'           // Khóa thể loại trong bảng trung gian
+            TheLoai::class,   // Model thể loại
+            'sach_theloai',   // Bảng trung gian
+            'ISBN13',         // ✅ khóa sách
+            'TheLoaiID'       // khóa thể loại
         );
+    }
+
+    /**
+     * Quan hệ với mượn trả
+     */
+    public function muonTras()
+    {
+        return $this->hasMany(MuonTra::class, 'ISBN13', 'ISBN13');
+    }
+
+    /**
+     * Dữ liệu trả về API / AJAX
+     */
+    public function toApiArray()
+    {
+        return [
+            'ISBN13'      => $this->ISBN13,
+            'TenSach'     => $this->TenSach,
+            'TomTat'      => $this->TomTat,
+            'NguoiDich'   => $this->NguoiDich,
+            'SoLuong'     => $this->SoLuong,
+            'SoTrang'     => $this->SoTrang,
+            'NamXuatBang' => $this->NamXuatBang,
+            'TrangThai'   => $this->TrangThai,
+            'MaVT'        => $this->MaVT,
+            'MaNXB'       => $this->MaNXB,
+            'TenNXB'      => optional($this->nhaXuatBan)->TenNXB,
+            'TacGias'     => $this->tacGias->pluck('TenTG'),
+            'TheLoais'    => $this->theLoais->pluck('TenTheLoai'),
+            'Anh' => $this->Anh
+                ? (str_starts_with($this->Anh, 'http') ? $this->Anh : asset($this->Anh))
+                : asset('img_book/default.jpg'),
+        ];
     }
 }

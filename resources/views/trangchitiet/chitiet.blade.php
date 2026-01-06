@@ -29,13 +29,13 @@
 
     <div id="tg-wrapper" class="tg-wrapper tg-haslayout">
         <!-- Header -->
-        @include('trangchitiet.partials.header')
+        @include('trangchu.partials.header')
 
         <!-- Nội dung chính -->
         @include('trangchitiet.partials.sach_chitiet')
 
         <!-- Footer -->
-        @include('trangchitiet.partials.footer')
+        @include('trangchu.partials.footer')
     </div>
 
     <!-- JS -->

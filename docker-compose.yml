@@ -11,12 +11,12 @@ services:
     env_file:
       - .env
     depends_on:
-      - mysql
+      - db
     command: php artisan serve --host=0.0.0.0 --port=8000
 
-  mysql:
+  db:
     image: mysql:8.0
-    container_name: mysql
+    container_name: qltv_mysql
     restart: unless-stopped
     environment:
       MYSQL_DATABASE: qltv
@@ -25,17 +25,23 @@ services:
       - "3306:3306"
     volumes:
       - dbdata:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     container_name: phpmyadmin
     restart: unless-stopped
     depends_on:
-      - mysql
+      db:
+        condition: service_healthy
     ports:
       - "8081:80"
     environment:
-      PMA_HOST: mysql
+      PMA_HOST: db
       PMA_PORT: 3306
       PMA_USER: root
       PMA_PASSWORD: root

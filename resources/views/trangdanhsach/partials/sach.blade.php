@@ -1,52 +1,72 @@
-<!-- file: list-books.blade.php -->
+<!-- LIST BOOKS -->
 <div id="book-list" class="book-grid">
-    <!-- Sách sẽ được JS chèn vào đây -->
+    <!-- JS sẽ render sách vào đây -->
 </div>
 
+<!-- CSS riêng cho card sách -->
 <style>
     /* Grid hiển thị sách */
     .book-grid {
         display: grid;
         grid-template-columns: repeat(5, 1fr);
-        /* 5 cột mặc định */
         gap: 30px;
-        /* tăng khoảng cách giữa các sách */
         padding: 20px 40px;
-        /* padding trên/dưới 20px, 2 bên 40px */
         box-sizing: border-box;
     }
 
-    /* Mỗi cuốn sách */
-    .book-item {
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        overflow: hidden;
+    /* Card sách */
+    .book-card {
         background: #fff;
-        text-align: center;
-        transition: transform 0.2s;
+        border-radius: 10px;
+        overflow: hidden;
+        cursor: pointer;
+        transition: all 0.25s ease;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        display: flex;
+        flex-direction: column;
     }
 
-    .book-item:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    .book-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
     }
 
-    /* Ảnh sách giữ tỉ lệ gốc, không bị cắt */
-    .book-item img {
+    /* Ảnh */
+    .book-thumb {
         width: 100%;
-        height: auto;
-        display: block;
+        aspect-ratio: 3 / 4;
+        overflow: hidden;
+        background: #f5f5f5;
     }
 
-    /* Tên sách */
-    .book-info {
-        padding: 10px;
+    .book-thumb img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
     }
 
-    .book-info h3 {
+    /* Nội dung */
+    .book-content {
+        padding: 14px 12px 16px;
+        text-align: center;
+    }
+
+    .book-title {
         font-size: 16px;
-        margin: 10px 0 0 0;
-        line-height: 1.2;
+        font-weight: 600;
+        color: #222;
+        margin: 0 0 6px;
+        line-height: 1.3;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .book-author {
+        font-size: 14px;
+        color: #777;
+        margin: 0;
     }
 
     /* Responsive */
@@ -72,32 +92,58 @@
         .book-grid {
             grid-template-columns: 1fr;
             padding: 20px;
-            /* 2 bên nhỏ hơn trên mobile */
         }
     }
 </style>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        fetch('/api')
+        const params = new URLSearchParams(window.location.search);
+        const keyword = params.get('q');
+
+        const apiUrl = keyword ?
+            `/api/search?q=${encodeURIComponent(keyword)}` :
+            `/api`;
+
+        fetch(apiUrl)
             .then(res => res.json())
             .then(data => {
                 const container = document.getElementById('book-list');
+
+                if (!Array.isArray(data) || data.length === 0) {
+                    container.innerHTML = `
+                    <p style="grid-column:1/-1;text-align:center;">
+                        ❌ Không tìm thấy sách phù hợp
+                    </p>
+                `;
+                    return;
+                }
+
                 container.innerHTML = data.map(book => {
-                    const tacGias = book.TacGias.length ? book.TacGias.join(', ') : 'Không rõ';
+                    const tacGias = Array.isArray(book.TacGias) && book.TacGias.length ?
+                        book.TacGias.join(', ') :
+                        'Không rõ';
 
                     return `
-                    <div class="book-item" onclick="window.location.href='/sach/${book.MaSach}'">
-                        <img src="${book.Anh}" alt="${book.TenSach}">
+                    <div class="book-card"
+                         onclick="window.location.href='/sach/${book.ISBN13}'">
 
-                        <div class="book-info">
-                            <h3>${book.TenSach}</h3>
-                            <p>${tacGias}</p>
+                        <div class="book-thumb">
+                            <img src="/img_book/${book.ISBN13}.jpg"
+                                 alt="${book.TenSach}"
+                                 onerror="this.src='/img_book/default.jpg'">
+                        </div>
+
+                        <div class="book-content">
+                            <h3 class="book-title">${book.TenSach}</h3>
+                            <p class="book-author">${tacGias}</p>
                         </div>
                     </div>
                 `;
                 }).join('');
             })
-            .catch(err => console.error('Lỗi tải dữ liệu sách:', err));
+            .catch(err => {
+                console.error('Lỗi tải sách:', err);
+            });
     });
 </script>

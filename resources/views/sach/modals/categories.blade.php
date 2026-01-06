@@ -1,5 +1,6 @@
 @php
     $selectedTheLoaiIds = $selectedTheLoaiIds ?? [];
+    $sortedTheLoais = $theLoais->sortBy('TenTheLoai');
 @endphp
 
 <div class="modal fade" id="categoriesModal" tabindex="-1" aria-hidden="true">
@@ -16,7 +17,7 @@
 
             <div class="modal-body">
                 <div class="row g-2">
-                    @foreach ($theLoais as $tl)
+                    @foreach ($sortedTheLoais as $tl)
                         <div class="col-6 col-md-4">
                             <div class="form-check">
                                 <input

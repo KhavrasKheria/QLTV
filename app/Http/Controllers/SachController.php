@@ -13,11 +13,26 @@ class SachController extends Controller
     /**
      * Hiển thị danh sách sách
      */
-    public function index()
+    public function index(Request $request)
     {
-        $sachs = Sach::with('nhaXuatBan')->get();
-        return view('sach.index', compact('sachs'));
+        $query = Sach::with(['nhaXuatBan', 'tacGias', 'theLoais']);
+
+        $notFound = false;
+
+        if ($request->filled('isbn')) {
+            $query->where('ISBN13', $request->isbn);
+
+            // kiểm tra tồn tại
+            if (!Sach::where('ISBN13', $request->isbn)->exists()) {
+                $notFound = true;
+            }
+        }
+
+        $sachs = $query->get();
+
+        return view('sach.index', compact('sachs', 'notFound'));
     }
+
 
     /**
      * Form thêm sách
@@ -37,7 +52,7 @@ class SachController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'MaSach'      => 'required|unique:sach,MaSach',
+            'ISBN13'      => 'required|size:13|unique:sach,ISBN13',
             'TenSach'     => 'required',
             'TomTat'      => 'nullable',
             'NguoiDich'   => 'nullable',
@@ -53,16 +68,16 @@ class SachController extends Controller
         ]);
 
         // Upload ảnh
-        $anhPath = 'img_book/' . $request->MaSach . '.jpg';
+        $anhPath = 'img_book/' . $request->ISBN13 . '.jpg';
         if ($request->hasFile('Anh')) {
             $file = $request->file('Anh');
-            $filename = $request->MaSach . '.' . $file->getClientOriginalExtension();
+            $filename = $request->ISBN13 . '.' . $file->getClientOriginalExtension();
             $file->move(public_path('img_book'), $filename);
             $anhPath = 'img_book/' . $filename;
         }
 
         $sach = Sach::create([
-            'MaSach'      => $request->MaSach,
+            'ISBN13'      => $request->ISBN13,
             'TenSach'     => $request->TenSach,
             'TomTat'      => $request->TomTat,
             'NguoiDich'   => $request->NguoiDich,
@@ -89,9 +104,9 @@ class SachController extends Controller
     /**
      * Form sửa sách
      */
-    public function edit($id)
+    public function edit($ISBN13)
     {
-        $sach = Sach::with('tacGias', 'theLoais')->findOrFail($id);
+        $sach = Sach::with('tacGias', 'theLoais')->findOrFail($ISBN13);
         $tacGias = TacGia::all();
         $theLoais = TheLoai::all();
         $nhaXuatBans = NhaXuatBan::all();
@@ -102,7 +117,7 @@ class SachController extends Controller
     /**
      * Cập nhật sách
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $ISBN13)
     {
         $request->validate([
             'TenSach'     => 'required',
@@ -119,12 +134,12 @@ class SachController extends Controller
             'theLoais'    => 'nullable|array',
         ]);
 
-        $sach = Sach::findOrFail($id);
+        $sach = Sach::findOrFail($ISBN13);
 
         $anhPath = $sach->Anh;
         if ($request->hasFile('Anh')) {
             $file = $request->file('Anh');
-            $filename = $sach->MaSach . '.' . $file->getClientOriginalExtension();
+            $filename = $sach->ISBN13 . '.' . $file->getClientOriginalExtension();
             $file->move(public_path('img_book'), $filename);
             $anhPath = 'img_book/' . $filename;
         }
@@ -151,9 +166,9 @@ class SachController extends Controller
     /**
      * Hiển thị chi tiết sách
      */
-    public function show($id)
+    public function show($ISBN13)
     {
-        $sach = Sach::with('tacGias', 'theLoais', 'nhaXuatBan')->findOrFail($id);
+        $sach = Sach::with('tacGias', 'theLoais', 'nhaXuatBan')->findOrFail($ISBN13);
 
         $tacGias = $sach->tacGias->pluck('TenTG')->toArray();
         $theLoais = $sach->theLoais->pluck('TenTheLoai')->toArray();
@@ -164,9 +179,9 @@ class SachController extends Controller
     /**
      * Xóa sách
      */
-    public function destroy($id)
+    public function destroy($ISBN13)
     {
-        $sach = Sach::findOrFail($id);
+        $sach = Sach::findOrFail($ISBN13);
 
         $sach->tacGias()->detach();
         $sach->theLoais()->detach();

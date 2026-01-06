@@ -7,7 +7,7 @@ $(document).ready(function() {
             // Tạo HTML cho từng sách
             const itemsHtml = data.map(book => `
                 <div class="item">
-                    <div class="tg-postbook">
+                    <div class="tg-postbook" onclick="window.location.href='/sach/${book.ISBN13}'" style="cursor: pointer;">
                         <figure class="tg-featureimg">
                             <div class="tg-bookimg">
                                 <div class="tg-frontcover">
@@ -24,7 +24,7 @@ $(document).ready(function() {
                         </figure>
                         <div class="tg-postbookcontent">
                             <div class="tg-booktitle">
-                                <h3><a href="#">${book.TenSach}</a></h3>
+                                <h3><a href="/sach/${book.ISBN13}">${book.TenSach}</a></h3>
                             </div>
                             <span class="tg-bookwriter">By: <a href="#">${book.TacGia}</a></span>
                             

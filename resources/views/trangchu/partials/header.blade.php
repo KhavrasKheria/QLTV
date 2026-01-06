@@ -4,25 +4,62 @@
         <div class="container">
             <div class="row">
                 <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                    <strong class="tg-logo"><a href="{{ asset('index-2.html') }}"><img src="{{ asset('book_library/images/logo.png') }}" alt="company name here"></a></strong>
+                    <strong class="tg-logo">
+                        <a href="{{ url('/') }}">
+                            <img src="{{ asset('book_library/images/logo.png') }}" alt="Book Library">
+                        </a>
+                    </strong>
+
                     <div class="tg-userlogin">
                         <figure>
                             <a href="{{ asset('javascript:void(0);') }}">
-                                <img src="{{ asset('book_library/images/users/img-01.jpg') }}" alt="image description">
+                                <img src="{{ asset('book_library/images/users/kiet1.jpg') }}" alt="image description">
                             </a>
                         </figure>
-                        <span>Hi, John</span>
+                        <span>Alexander Isac</span>
                     </div>
 
                     <div class="tg-searchbox">
-                        <form class="tg-formtheme tg-formsearch">
-                            <fieldset>
-                                <input type="text" name="search" class="typeahead form-control" placeholder="Search by title, author, keyword, ISBN...">
-                                <button type="submit"><i class="icon-magnifier"></i></button>
+                        <form method="GET"
+                            action="{{ route('search') }}"
+                            class="tg-formtheme tg-formsearch"
+                            id="searchForm">
+
+                            <fieldset style="position: relative;">
+                                <input type="text"
+                                    name="q"
+                                    id="searchInput"
+                                    value="{{ request('q') }}"
+                                    class="form-control"
+                                    placeholder="Tìm theo tên sách, tác giả, NXB...">
+
+                                {{-- 🎤 Micro --}}
+                                <button type="button"
+                                    id="micBtn"
+                                    title="Tìm bằng giọng nói"
+                                    style="
+                        position:absolute;
+                        right:45px;
+                        top:50%;
+                        transform:translateY(-50%);
+                        background:none;
+                        border:none;
+                        cursor:pointer;
+                    ">
+                                    🎤
+                                </button>
+
+                                {{-- 🔍 Submit --}}
+                                <button type="submit">
+                                    <i class="icon-magnifier"></i>
+                                </button>
                             </fieldset>
-                            <a href="{{ asset('javascript:void(0);') }}">+ Advanced Search</a>
+
+                            <a href="javascript:void(0)">+ Advanced Search</a>
                         </form>
                     </div>
+
+
                 </div>
             </div>
         </div>
@@ -679,4 +716,54 @@
             </div>
         </div>
     </div>
+    <script>
+let recognition;
+let isListening = false;
+
+document.getElementById('micBtn').addEventListener('click', () => {
+
+    if (!('webkitSpeechRecognition' in window)) {
+        alert('Trình duyệt không hỗ trợ nhận diện giọng nói. Vui lòng dùng Chrome.');
+        return;
+    }
+
+    if (!recognition) {
+        recognition = new webkitSpeechRecognition();
+        recognition.lang = 'vi-VN';
+        recognition.continuous = false;
+        recognition.interimResults = false;
+
+        recognition.onresult = function (event) {
+            const text = event.results[0][0].transcript;
+            document.getElementById('searchInput').value = text;
+
+            // 🔥 Tự submit (có thể bỏ nếu không thích)
+            document.getElementById('searchForm').submit();
+        };
+
+        recognition.onerror = function () {
+            stopListening();
+        };
+
+        recognition.onend = function () {
+            stopListening();
+        };
+    }
+
+    if (!isListening) {
+        recognition.start();
+        isListening = true;
+        document.getElementById('micBtn').style.color = 'red';
+    } else {
+        stopListening();
+    }
+});
+
+function stopListening() {
+    if (recognition) recognition.stop();
+    isListening = false;
+    document.getElementById('micBtn').style.color = '';
+}
+</script>
+
 </header>
