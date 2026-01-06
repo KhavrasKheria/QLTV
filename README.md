@@ -1,61 +1,186 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+📚 HỆ THỐNG QUẢN LÝ THƯ VIỆN
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Library Management System – Laravel
 
-## About Laravel
+1. Giới thiệu đề tài
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+    Tên đề tài: Hệ thống quản lý thư viện
 
--   [Simple, fast routing engine](https://laravel.com/docs/routing).
--   [Powerful dependency injection container](https://laravel.com/docs/container).
--   Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
--   Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
--   Database agnostic [schema migrations](https://laravel.com/docs/migrations).
--   [Robust background job processing](https://laravel.com/docs/queues).
--   [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+    Môn học: Đồ án chuyên ngành
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+    Mục tiêu:
+    Xây dựng hệ thống quản lý thư viện hỗ trợ thủ thư trong việc quản lý sách, độc giả, mượn – trả sách và hỗ trợ người dùng tra cứu thông tin sách một cách trực quan, dễ sử dụng.
 
-## Learning Laravel
+2. Công nghệ sử dụng
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+    Backend: Laravel (PHP)
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+    Frontend: Blade Template, HTML, CSS, JavaScript, Bootstrap
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+    Cơ sở dữ liệu: MySQL
 
-## Laravel Sponsors
+    Công cụ khác:
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+    Composer
 
-### Premium Partners
+    Git & GitHub
 
--   **[Vehikl](https://vehikl.com)**
--   **[Tighten Co.](https://tighten.co)**
--   **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
--   **[64 Robots](https://64robots.com)**
--   **[Curotec](https://www.curotec.com/services/technologies/laravel)**
--   **[DevSquad](https://devsquad.com/hire-laravel-developers)**
--   **[Redberry](https://redberry.international/laravel-development)**
--   **[Active Logic](https://activelogic.com)**
+    Docker (tùy chọn)
 
-## Contributing
+3. Chức năng chính
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+👤 Người dùng (Client)
 
-## Code of Conduct
+    Xem danh sách sách
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+    Xem chi tiết sách
 
-## Security Vulnerabilities
+    Xem vị trí sách trong thư viện (bản đồ trực quan)
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+    Tìm kiếm sách theo tên, bằng giọng nói.
 
-## License
+👨‍💼 Thủ thư / Admin
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+    Quản lý sách
+
+    Quản lý tác giả
+
+    Quản lý thể loại
+
+    Quản lý nhà xuất bản
+
+    Quản lý độc giả
+
+    Quản lý mượn – trả sách
+
+    Gia hạn, trả sách
+
+    Xem lịch sử mượn – trả
+
+4. Yêu cầu môi trường
+
+    PHP >= 8.1
+
+    Composer
+
+    MySQL
+
+    Git
+
+5. Hướng dẫn cài đặt
+
+🔹 Bước 1: Clone project từ GitHub
+
+        git clone https://github.com/KhavrasKheria/QLTV.git
+        cd QLTV
+
+🔹 Bước 2: Cài đặt thư viện PHP (Composer)
+
+        composer install
+
+🔹 Bước 3: Tạo file môi trường .env
+
+        cp .env.example .env
+
+        Cấu hình database trong file .env:
+
+        DB_CONNECTION=mysql
+        DB_HOST=127.0.0.1
+        DB_PORT=3306
+        DB_DATABASE=qltv
+        DB_USERNAME=root
+        DB_PASSWORD=
+
+🔹 Bước 4: Tạo key cho ứng dụng
+
+        php artisan key:generate
+
+🔹 Bước 5: Import cơ sở dữ liệu
+
+        Project đã cung cấp sẵn file database trong repository.
+
+        📁 Vị trí file database:
+
+        database/sql/qltv.sql
+
+        Import bằng phpMyAdmin
+
+        Tạo database tên qltv
+
+        Mở phpMyAdmin
+
+        Chọn database qltv
+
+        Chọn tab Import
+
+        Upload file database/sql/qltv.sql
+
+        Nhấn Go
+
+🔹 Bước 6: Chạy project
+
+        php artisan serve
+
+        Truy cập hệ thống ở local:
+
+        http://127.0.0.1:8000
+
+        Truy cập hệ thống ở host:
+
+        https://ba-libra.id.vn
+
+6. Tài khoản demo
+
+    Hệ thống đã có sẵn dữ liệu mẫu.
+
+    Vai trò: Thủ thư(Admin)
+    Email: kieta123123@gmail.com
+    Mật khẩu: @nhKiet3823
+
+7. Hướng dẫn sử dụng
+
+    🏠 Trang chủ
+
+        Hiển thị danh sách sách
+
+        Click vào sách để xem chi tiết
+
+        📖 Trang chi tiết sách
+
+        Xem thông tin sách
+
+        Xem tóm tắt nội dung
+
+        Xem vị trí sách trong thư viện bằng bản đồ trực quan
+
+    🧑‍💼 Trang quản trị
+
+    Đăng nhập tại:
+
+        /login
+
+    Truy cập dashboard:
+
+        /admin
+        
+    Quản lý sách, độc giả, mượn – trả
+
+    Thủ tục liên quan đến ảnh QR Code và Barcode
+
+    Hệ thống có sử dụng ảnh QR Code và Barcode phục vụ cho các chức năng như:
+
+        Quét mã độc giả (QR Code)
+
+        Quét ISBN sách (Barcode)
+    
+    Vị trí lưu trữ ảnh test
+
+        Anh_test/QR: chứa ảnh QR Code của độc giả
+
+        Anh_test/Barcode: chứa ảnh mã vạch (ISBN) của sách
+
+9. Thông tin nhóm 6
+
+    Họ và tên: Nguyễn Lê Anh Kiệt – MSSV: DH52111178
+
+    Họ và tên: Trần Khánh Duy – MSSV: DH52200588
